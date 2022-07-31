@@ -1,24 +1,116 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  Button,
+  HStack,
+  PinInput,
+  PinInputField,
+  SimpleGrid,
+  VStack,
+} from "@chakra-ui/react";
+import React, { useMemo, useState } from "react";
+import { Tile } from "./components";
 
 function App() {
+  const [words, setWords] = useState<string[]>([]);
+  const [tiles, setTiles] = useState<string[]>([]);
+  const [word, setWord] = useState<string>("");
+
+  const [firstTile, setFirstTile] = useState<string>("0");
+  const [secondTile, setSecondTile] = useState<string>("0");
+  const [thirdTile, setThirdTile] = useState<string>("0");
+  const [fourthTile, setFourthTile] = useState<string>("0");
+  const [fifthTile, setFifthTile] = useState<string>("0");
+
+  const handleClick = () => {
+    setWords([...words, word]);
+    setTiles([
+      ...tiles,
+      firstTile + secondTile + thirdTile + fourthTile + fifthTile,
+    ]);
+    setWord("");
+    setFirstTile("0");
+    setSecondTile("0");
+    setThirdTile("0");
+    setFourthTile("0");
+    setFifthTile("0");
+  };
+
+  const wordsToDisplay = useMemo(
+    () =>
+      words.map((word, index) => {
+        return (
+          <HStack spacing={2}>
+            <Tile
+              key="1"
+              letter={word.charAt(0)}
+              givenColor={tiles[index].charAt(0)}
+              onChange={() => {}}
+            />
+            <Tile
+              key="2"
+              letter={word.charAt(1)}
+              givenColor={tiles[index].charAt(1)}
+              onChange={() => {}}
+            />
+            <Tile
+              key="3"
+              letter={word.charAt(2)}
+              givenColor={tiles[index].charAt(2)}
+              onChange={() => {}}
+            />
+            <Tile
+              key="4"
+              letter={word.charAt(3)}
+              givenColor={tiles[index].charAt(3)}
+              onChange={() => {}}
+            />
+            <Tile
+              key="5"
+              letter={word.charAt(4)}
+              givenColor={tiles[index].charAt(4)}
+              onChange={() => {}}
+            />
+          </HStack>
+        );
+      }),
+    [words, tiles]
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <VStack>
+        <h1>The computer™️ suggests to enter the following words: //todo</h1>
+        <h2>What word did you enter?</h2>
+
+        <HStack>
+          <PinInput
+            placeholder=""
+            type="alphanumeric"
+            defaultValue=""
+            id="inputfield"
+            value={word}
+            onChange={setWord}
+          >
+            <PinInputField />
+            <PinInputField />
+            <PinInputField />
+            <PinInputField />
+            <PinInputField />
+          </PinInput>
+        </HStack>
+        <h2>What tiles did you get?</h2>
+
+        <HStack>
+          <SimpleGrid columns={5} spacing={2}>
+            <Tile key="1" givenColor={firstTile} onChange={setFirstTile} />
+            <Tile key="2" givenColor={secondTile} onChange={setSecondTile} />
+            <Tile key="3" givenColor={thirdTile} onChange={setThirdTile} />
+            <Tile key="4" givenColor={fourthTile} onChange={setFourthTile} />
+            <Tile key="5" givenColor={fifthTile} onChange={setFifthTile} />
+          </SimpleGrid>
+        </HStack>
+        <Button onClick={handleClick}>ok</Button>
+        <VStack pt={2}>{wordsToDisplay}</VStack>
+      </VStack>
     </div>
   );
 }

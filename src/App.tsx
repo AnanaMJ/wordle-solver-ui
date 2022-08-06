@@ -1,18 +1,16 @@
-import {
-  Button,
-  HStack,
-  PinInput,
-  PinInputField,
-  SimpleGrid,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, HStack, SimpleGrid, VStack, Text } from "@chakra-ui/react";
 import React, { useMemo, useState } from "react";
-import { Tile } from "./components";
+import { getPrioritisedListOfWords, updateListOfWords } from "./brains";
+import { TextInput, Tile } from "./components";
 
 function App() {
   const [words, setWords] = useState<string[]>([]);
   const [tiles, setTiles] = useState<string[]>([]);
   const [word, setWord] = useState<string>("");
+  const prioritisedListOfWords = useMemo(() => getPrioritisedListOfWords(), []);
+  const [suggestedWords, setSuggestedWord] = useState<string[]>(
+    prioritisedListOfWords
+  );
 
   const [firstTile, setFirstTile] = useState<string>("0");
   const [secondTile, setSecondTile] = useState<string>("0");
@@ -22,16 +20,16 @@ function App() {
 
   const handleClick = () => {
     setWords([...words, word]);
-    setTiles([
-      ...tiles,
-      firstTile + secondTile + thirdTile + fourthTile + fifthTile,
-    ]);
+    const colouredAnswer =
+      firstTile + secondTile + thirdTile + fourthTile + fifthTile;
+    setTiles([...tiles, colouredAnswer]);
     setWord("");
     setFirstTile("0");
     setSecondTile("0");
     setThirdTile("0");
     setFourthTile("0");
     setFifthTile("0");
+    setSuggestedWord(updateListOfWords(word, colouredAnswer, suggestedWords));
   };
 
   const wordsToDisplay = useMemo(
@@ -78,24 +76,18 @@ function App() {
   return (
     <div className="App">
       <VStack>
-        <h1>The computer™️ suggests to enter the following words: //todo</h1>
+        <h1>The computer™️ suggests to enter the following words:</h1>
+        <HStack>
+          {suggestedWords.slice(0, 5).map((word) => (
+            <Text key={word} fontWeight="bold">
+              {word.toUpperCase()}
+            </Text>
+          ))}
+        </HStack>
         <h2>What word did you enter?</h2>
 
         <HStack>
-          <PinInput
-            placeholder=""
-            type="alphanumeric"
-            defaultValue=""
-            id="inputfield"
-            value={word}
-            onChange={setWord}
-          >
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-            <PinInputField />
-          </PinInput>
+          <TextInput value={word} onChange={setWord} />
         </HStack>
         <h2>What tiles did you get?</h2>
 

@@ -7,33 +7,64 @@ export const updateListOfWords = (
   colouredAnswer: string,
   filteredWords: string[]
 ) => {
-  for (var i = 0; i < 5; i++) {
-    const letterAtCurrentIndex = answer.charAt(i);
+  for (var index = 0; index < 5; index++) {
+    const letterAtCurrentIndex = answer.charAt(index);
 
     let noBlacks: string[] = [];
     let noYellows: string[] = [];
     let keepGreens: string[] = [];
-    const colour = colouredAnswer.charAt(i);
-    if (colour === "0") {
-      noBlacks = filteredWords.filter(
-        (filteredWord) => !filteredWord.includes(letterAtCurrentIndex)
+    const colour = colouredAnswer.charAt(index);
+    // keep all greens
+    if (colour === "2") {
+      keepGreens = filteredWords.filter(
+        // eslint-disable-next-line no-loop-func
+        (word) => word.charAt(index) === letterAtCurrentIndex
       );
     }
+
+    // keep words where the
     if (colour === "1") {
-      noYellows = (noBlacks.length ? noBlacks : filteredWords).filter(
+      noYellows = (keepGreens.length ? keepGreens : filteredWords).filter(
+        // eslint-disable-next-line no-loop-func
         (filteredWord) =>
-          filteredWord.charAt(i) !== letterAtCurrentIndex &&
+          filteredWord.charAt(index) !== letterAtCurrentIndex &&
           filteredWord.includes(letterAtCurrentIndex)
       );
     }
-    if (colour === "2") {
-      keepGreens = (
+
+    if (colour === "0") {
+      noBlacks = (
         noYellows.length
           ? noYellows
-          : noBlacks.length
-          ? noBlacks
+          : keepGreens.length
+          ? keepGreens
           : filteredWords
-      ).filter((word) => word.charAt(i) === letterAtCurrentIndex);
+      ).filter(
+        // eslint-disable-next-line no-loop-func
+        (filteredWord) => {
+          const indices = [...answer].flatMap((char, i) =>
+            char === letterAtCurrentIndex ? i + 1 : []
+          );
+          if (indices.length === 1) {
+            return !filteredWord.includes(letterAtCurrentIndex);
+          } else {
+            let greenCount = 0;
+            let yellowCount = 0;
+            indices.forEach((i) => {
+              if (colouredAnswer.charAt(i - 1) === "2") greenCount += 1;
+              if (colouredAnswer.charAt(i - 1) === "1") yellowCount += 1;
+            });
+            const numberOfLettersAllowed = greenCount + yellowCount;
+            // letter can't be at the black positions and can't have more occ than yellow + green
+            return (
+              filteredWord.charAt(index) !== letterAtCurrentIndex &&
+              [...filteredWord].flatMap((char, i) =>
+                char === letterAtCurrentIndex ? i + 1 : []
+              ).length === numberOfLettersAllowed
+            );
+          }
+        }
+      );
     }
     filteredWords = keepGreens.length
       ? keepGreens
@@ -41,6 +72,5 @@ export const updateListOfWords = (
       ? noYellows
       : noBlacks;
   }
-  console.log("filteredWords", filteredWords);
-  return filteredWords;
+  return { filteredWords };
 };

@@ -1,5 +1,6 @@
 import { Button, HStack, SimpleGrid, VStack, Text } from "@chakra-ui/react";
 import React, { useMemo, useState } from "react";
+import { useCallback } from "react";
 import { getPrioritisedListOfWords, updateListOfWords } from "./brains";
 import { TextInput, Tile } from "./components";
 
@@ -18,7 +19,7 @@ function App() {
   const [fourthTile, setFourthTile] = useState<string>("0");
   const [fifthTile, setFifthTile] = useState<string>("0");
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     setWords([...words, word]);
     const colouredAnswer =
       firstTile + secondTile + thirdTile + fourthTile + fifthTile;
@@ -29,8 +30,23 @@ function App() {
     setThirdTile("0");
     setFourthTile("0");
     setFifthTile("0");
-    setSuggestedWord(updateListOfWords(word, colouredAnswer, suggestedWords));
-  };
+    const { filteredWords } = updateListOfWords(
+      word,
+      colouredAnswer,
+      suggestedWords
+    );
+    setSuggestedWord(filteredWords);
+  }, [
+    words,
+    word,
+    firstTile,
+    secondTile,
+    thirdTile,
+    fourthTile,
+    fifthTile,
+    suggestedWords,
+    tiles,
+  ]);
 
   const wordsToDisplay = useMemo(
     () =>

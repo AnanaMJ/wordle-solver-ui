@@ -7,10 +7,6 @@ export const getPrioritisedListOfWords: () => string[] = () => {
   const answers = wordleAnswersAlphabetical.split("\n");
   const possibleGuesses = [...allowedGuesses, ...answers].sort();
 
-  console.log("allowedGuesses", allowedGuesses);
-  console.log("answers", answers);
-  console.log("possibleGuesses", possibleGuesses);
-
   // get a ranking of letters
   // const letters = [...Array(26)].map((_, i) =>
   //   String.fromCharCode(65 + i).toLowerCase()
@@ -27,7 +23,6 @@ export const getPrioritisedListOfWords: () => string[] = () => {
       }
     }
   });
-  console.log("possibleGuesses", possibleGuesses);
 
   // find best word for the first try
   const wordToValue: Map<string, number> = new Map();
@@ -44,14 +39,10 @@ export const getPrioritisedListOfWords: () => string[] = () => {
     }
     wordToValue.set(word, total);
   });
-  console.log("wordToValue", wordToValue);
-  console.log("wordToValue.keys()", wordToValue.keys());
 
   const response = [...wordToValue.entries()]
     .sort((a, b) => b[1] - a[1])
     .map((item) => item[0]);
 
-  console.log("wordToValue", wordToValue);
-  console.log("response", response);
   return response;
 };

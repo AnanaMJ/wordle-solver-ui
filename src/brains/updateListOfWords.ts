@@ -22,7 +22,7 @@ export const updateListOfWords = (
       );
     }
 
-    // keep words where the
+    // keep yellow letters but not at the current position
     if (colour === "1") {
       noYellows = (keepGreens.length ? keepGreens : filteredWords).filter(
         // eslint-disable-next-line no-loop-func
@@ -32,6 +32,7 @@ export const updateListOfWords = (
       );
     }
 
+    // deal with black letters
     if (colour === "0") {
       noBlacks = (
         noYellows.length
@@ -46,6 +47,7 @@ export const updateListOfWords = (
             char === letterAtCurrentIndex ? i + 1 : []
           );
           if (indices.length === 1) {
+            // if this is the only letter and it's black, filter it out
             return !filteredWord.includes(letterAtCurrentIndex);
           } else {
             let greenCount = 0;
@@ -55,7 +57,7 @@ export const updateListOfWords = (
               if (colouredAnswer.charAt(i - 1) === "1") yellowCount += 1;
             });
             const numberOfLettersAllowed = greenCount + yellowCount;
-            // letter can't be at the black positions and can't have more occ than yellow + green
+            // letter can't be at the black positions and can't have more occurence than yellow + green
             return (
               filteredWord.charAt(index) !== letterAtCurrentIndex &&
               [...filteredWord].flatMap((char, i) =>
